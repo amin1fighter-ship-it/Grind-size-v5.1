@@ -11,12 +11,14 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Extract ZIP File
+    - name: Extract and Locate Gradle Files
       run: |
         unzip -o *.zip
-        if [ -d "cga" ]; then
+        TARGET_DIR=$(find . -mindepth 2 -maxdepth 3 -name "build.gradle.kts" | head -n 1 | xargs dirname)
+        if [ -n "$TARGET_DIR" ]; then
+          echo "Found project in $TARGET_DIR, moving to root..."
           shopt -s dotglob
-          cp -rf cga/. .
+          cp -rf "$TARGET_DIR"/* .
         fi
 
     - name: Set up JDK 17
